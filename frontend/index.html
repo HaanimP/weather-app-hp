@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh; 
+            background-image: url('https://i.ibb.co/F0tgx81/cloudy-weather-digital-illustration-hi16vkc00cp99uzv.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+        .container {
+            margin-top: 3% !important;
+            width: 60%;
+            align-items:center;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.2); 
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 0 auto; /* Center horizontally */
+            margin-bottom: 20px;
+        }
+        .forecast-container {
+            width: auto;
+            background-color: transparent; 
+            backdrop-filter: blur(4px);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        input[type="text"] {
+            padding: 10px;
+            width: calc(100% - 22px);
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #currentWeatherInfo, #forecastInfo {
+            text-align: center;
+            margin-top: 20px;
+        }
+        p {
+            font-size: 18px;
+            color: #333;
+        }
+        .forecast {
+            margin-top: 20px;
+            display: flex;
+            width: auto;
+            height: auto;
+            flex-direction: row;
+            gap: 10px;
+        }
+        .forecast .day {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+        .weather-icon {
+            width: 50px;
+            height: 50px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                height: 100vh; 
+                background-image: url('https://i.ibb.co/3MfbjFm/HD-wallpaper-spring-clouds-green-hill-natural-nature-spring-weather-tree.jpg');
+                background-size: cover;
+                background-position: center;
+            }
+            .container, .forecast-container {
+                width: auto;
+                margin: 10px 0;
+                padding: 15px;
+            }
+            input[type="text"] {
+                width: calc(100% - 22px);
+                font-size: 14px;
+            }
+            button {
+                font-size: 14px;
+            }
+            p {
+                font-size: 16px;
+            }
+            #currentWeatherInfo, #forecastInfo {
+                text-align: center;
+                margin-top: 20px;
+            }
+            .forecast .day {
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                background-color: rgba(255, 255, 255, 0.5);
+            }
+
+            .forecast {
+                margin-top: 20px;
+                display: flex;
+                width: auto;
+                height: auto;
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        @media (min-width: 601px) and (max-width: 768px) {
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                height: 100vh; 
+                background-image: url('https://i.ibb.co/T1Cg6GG/images-1.jpg');
+                background-size: cover;
+                background-position: center;
+            }
+            .container {
+                width: auto;
+                margin: 10px 0;
+                padding: 15px;
+            }
+            .forecast-container {
+                width: auto;
+                margin: 10px 0;
+                padding: 15px;
+            }
+            input[type="text"] {
+                font-size: 16px;
+            }
+            button {
+                font-size: 16px;
+            }
+            p {
+                font-size: 18px;
+            }
+            .forecast {
+                margin-top: 20px;
+                display: flex;
+                width: auto;
+                height: auto;
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Weather App</h1>
+        <input type="text" id="cityInput" placeholder="Enter City">
+        <button onclick="getWeather()">View the weather</button>
+        <div id="currentWeatherInfo"></div>
+    </div>
+
+    <div class="forecast-container">
+        <div id="forecastInfo"></div>
+    </div>
+
+    <script>
+        function expandContainers() {
+            var container = document.querySelector('.container');
+            var forecastContainer = document.querySelector('.forecast-container');
+            container.style.width = '80%'; // Adjust width as needed
+            forecastContainer.style.width = '80%'; // Adjust width as needed
+            container.style.marginTop = '50px'; // Adjust top margin as needed
+            forecastContainer.style.marginBottom = '50px'; // Adjust bottom margin as needed
+        }
+
+
+        function getWeather() {
+            fetchWeather();
+            setInterval(fetchWeather, 60000); // Fetch weather every minute
+        }
+
+        function fetchWeather() {
+            var city = document.getElementById("cityInput").value;
+            var url = `http://localhost:5000/weather?city=${encodeURIComponent(city)}`;
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    displayWeather(data);
+                })
+                .catch(error => {
+                    document.getElementById("currentWeatherInfo").innerHTML = `<p>Error: ${error.message}</p>`;
+                });
+        }
+
+        function displayWeather(data) {
+            var currentWeather = data.current_weather;
+            var forecast = data.forecast;
+
+            // Display current weather
+            var weatherIcon = getWeatherIcon(currentWeather.weather);
+            var celsiusTemperature = Math.round((currentWeather.temperature - 32) * (5 / 9)); // Convert Fahrenheit to Celsius and round to whole number
+            var currentWeatherHTML = `
+                <p><strong>Current Weather:</strong></p>
+                <p>Weather: ${currentWeather.weather} ${weatherIcon}</p>
+                <p>Temperature: ${celsiusTemperature}°C</p> <!-- Display temperature in Celsius -->
+                <p>Precipitation: ${currentWeather.precipitation}</p>
+                <p>Humidity: ${currentWeather.humidity}</p>
+                <p>Wind Speed: ${currentWeather.wind_speed}</p>
+                <p>Sunrise: ${new Date(currentWeather.sunrise * 1000).toLocaleTimeString()}</p>
+                <p>Sunset: ${new Date(currentWeather.sunset * 1000).toLocaleTimeString()}</p>
+            `;
+            document.getElementById("currentWeatherInfo").innerHTML = currentWeatherHTML;
+
+            // Display forecast
+            var forecastHTML = '<p><strong>7-Day Forecast:</strong></p><div class="forecast">';
+            forecast.forEach(day => {
+                var celsiusTemp = Math.round((day.temperature - 32) * (5 / 9)); // Convert Fahrenheit to Celsius and round to whole number
+                forecastHTML += `
+                    <div class="day">
+                        <p>Date: ${day.date}</p>
+                        <p>Weather: ${day.weather} ${getWeatherIcon(day.weather)}</p>
+                        <p>Temperature: ${celsiusTemp}°C</p> <!-- Display temperature in Celsius -->
+                        <p>Precipitation: ${day.precipitation}</p>
+                        <p>Humidity: ${day.humidity}</p>
+                        <p>Wind Speed: ${day.wind_speed}</p>
+                    </div>
+                `;
+            });
+            forecastHTML += '</div>';
+            document.getElementById("forecastInfo").innerHTML = forecastHTML;
+        }
+
+        function getWeatherIcon(weather) {
+            switch(weather.toLowerCase()) {
+                case 'clear':
+                    return '<img class="weather-icon" src="https://img.icons8.com/plasticine/100/000000/sun.png" alt="Clear">';
+                case 'clouds':
+                    return '<img class="weather-icon" src="https://img.icons8.com/windows/100/000000/cloud.png" alt="Clouds">';
+                case 'rain':
+                    return '<img class="weather-icon" src="https://img.icons8.com/cotton/64/000000/rain--v3.png" alt="Rain">';
+                case 'snow':
+                    return '<img class="weather-icon" src="https://img.icons8.com/ios/100/000000/snow.png" alt="Snow">';
+                default:
+                    return '';
+            }
+        }
+    </script>
+</body>
+</html>
